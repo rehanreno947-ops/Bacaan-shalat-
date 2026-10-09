@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Tuntunan Bacaan Sholat — Muhammadiyah</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+  body {
+    background: linear-gradient(135deg,#0a3d2e,#14532d,#166534);
+    color:#fff; min-height:100vh; padding:20px; line-height:1.7;
+  }
+  .container { max-width:760px; margin:0 auto; }
+  header {
+    text-align:center; padding:26px 16px;
+    background:rgba(255,255,255,.08); border-radius:16px;
+    margin-bottom:20px; border:1px solid rgba(255,255,255,.1);
+  }
+  header h1 { font-size:22px; color:#fbbf24; letter-spacing:1px; }
+  header p { font-size:13px; color:#d1d5db; margin-top:6px; }
+  .note {
+    background:rgba(251,191,36,.1); border:1px dashed #fbbf24;
+    padding:12px 14px; border-radius:10px; font-size:13px;
+    color:#fde68a; margin-bottom:18px;
+  }
+  .step {
+    background:rgba(255,255,255,.06); border-left:4px solid #fbbf24;
+    border-radius:12px; padding:16px 18px; margin-bottom:14px;
+    transition:.2s; cursor:pointer;
+  }
+  .step:hover { background:rgba(255,255,255,.12); }
+  .step.active { border-left-color:#22c55e; background:rgba(34,197,94,.15); }
+  .step h2 {
+    font-size:15px; color:#fbbf24;
+    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  }
+  .step h2 .num {
+    background:#fbbf24; color:#0a3d2e; font-size:12px;
+    width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:bold; flex-shrink:0;
+  }
+  .arabic {
+    font-family:'Traditional Arabic','Amiri',serif;
+    font-size:23px; direction:rtl; text-align:right;
+    color:#fef3c7; margin:12px 0; line-height:2;
+  }
+  .arabic .ayat { display:block; margin-bottom:6px; }
+  .ayat-num {
+    color:#fbbf24; font-size:14px;
+    font-family:'Segoe UI',sans-serif; margin-left:6px;
+  }
+  .latin { font-style:italic; color:#a7f3d0; font-size:13.5px; margin-bottom:6px; }
+  .arti { font-size:13px; color:#d1d5db; }
+  footer { text-align:center; padding:22px; font-size:12px; color:#9ca3af; margin-top:20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🕌 Tuntunan Bacaan Sholat</h1>
+    <p>Berdasarkan Himpunan Putusan Tarjih Muhammadiyah</p>
+  </header>
+
+  <div class="note">
+    ⚠️ Muhammadiyah tidak menggunakan qunut dalam shalat Subuh. Bacaan mengikuti HPT Muhammadiyah.
+  </div>
+
+  <div id="steps"></div>
+
+  <footer>
+    <p>© RealZy — Tuntunan Sholat Muhammadiyah</p>
+    <p>Klik tiap langkah untuk menandai selesai ✨</p>
+  </footer>
+</div>
+
+<script>
+const data = [
+  {
+    title:"Berdiri Tegak Menghadap Kiblat",
+    arabic:"", latin:"",
+    arti:"Sholat dimulai dengan berdiri tegak, kedua kaki sejajar, tangan di sisi tubuh, menghadap kiblat dengan penuh ketundukan dan kekhusyukan."
+  },
+  {
+    title:"Niat (dalam Hati) & Takbiratul Ihram",
+    arabic:"اللهُ أَكْبَرُ",
+    latin:"Allaahu Akbar",
+    arti:"Niat adalah kehendak di dalam hati untuk mencari ridho Allah. Muhammadiyah tidak menganjurkan melafalkan niat. Lalu angkat kedua tangan dan ucapkan takbir."
+  },
+  {
+    title:"Doa Iftitah (Muhammadiyah)",
+    arabic:"اللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ ، كَمَا بَاعَدْتَ بَيْنَ المَشْرِقِ وَالمَغْرِبِ ، اللَّهُمَّ نَقِّنِي مِنَ الخَطَايَا ، كَمَا يُنَقَّى الثَّوْبُ الأَبْيَضُ مِنَ الدَّنَسِ ، اللَّهُمَّ اغْسِلْ خَطَايَايَ بِالْمَاءِ ، وَالثَّلْجِ ، وَالبَرَدِ",
+    latin:"Allāhumma bā'id baynī wa bayna khaṭāyāya kamā bā'adta baynal-masyriki wal-maghrib. Allāhumma naqqinī minal-khaṭāyā kamā yunaqqats-tsawbul-abyaḍhu minad-danas. Allāhumma ighsil khaṭāyāya bil-mā'i wats-tsalji wal-barad.",
+    arti:"Wahai Allah, jauhkanlah antara aku dan kesalahan-kesalahanku sebagaimana Engkau jauhkan antara timur dan barat. Ya Allah, bersihkanlah aku dari kesalahan sebagaimana bersihnya baju putih dari kotoran. Ya Allah, basuhlah kesalahan-kesalahanku dengan air, salju, dan air dingin."
+  },
+  {
+    title:"Ta'awudz",
+    arabic:"أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+    latin:"A'udzu billaahi minasy syaithaanir rajiim.",
+    arti:"Aku berlindung kepada Allah dari godaan syaitan yang terkutuk."
+  },
+  {
+    title:"Surah Al-Fatihah (Lengkap 7 Ayat)",
+    arabic:
+      '<span class="ayat">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ <span class="ayat-num">(1)</span></span>' +
+      '<span class="ayat">الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ <span class="ayat-num">(2)</span></span>' +
+      '<span class="ayat">الرَّحْمَنِ الرَّحِيمِ <span class="ayat-num">(3)</span></span>' +
+      '<span class="ayat">مَالِكِ يَوْمِ الدِّينِ <span class="ayat-num">(4)</span></span>' +
+      '<span class="ayat">إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ <span class="ayat-num">(5)</span></span>' +
+      '<span class="ayat">اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ <span class="ayat-num">(6)</span></span>' +
+      '<span class="ayat">صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ <span class="ayat-num">(7)</span></span>',
+    latin:"1. Bismillaahir rahmaanir rahiim. 2. Alhamdulillaahi rabbil 'aalamiin. 3. Ar-rahmaanir rahiim. 4. Maaliki yaumid diin. 5. Iyyaaka na'budu wa iyyaaka nasta'iin. 6. Ihdinash shiraathal mustaqiim. 7. Shiraathal ladziina an'amta 'alaihim ghairil maghdhuubi 'alaihim wa ladh dhaalliin. (Aamiin)",
+    arti:"1. Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. 2. Segala puji bagi Allah, Tuhan seluruh alam. 3. Yang Maha Pengasih lagi Maha Penyayang. 4. Pemilik hari pembalasan. 5. Hanya kepada-Mu kami menyembah, dan hanya kepada-Mu kami meminta pertolongan. 6. Tunjukilah kami jalan yang lurus. 7. (Yaitu) jalan orang-orang yang telah Engkau beri nikmat, bukan (jalan) mereka yang dimurkai, dan bukan (pula jalan) mereka yang sesat."
+  },
+  {
+    title:"Ruku' & Tuma'ninah",
+    arabic:"سُبْحَانَكَ اللّهم رَبَّنَا وَبِحَمْدِكَ اللّهم اغْفِرْلِيْ",
+    latin:"Subḥānaka Allāhumma rabbana wa biḥamdika, Allāhumma ighfir lī.",
+    arti:"Maha Suci Engkau, ya Allah. Dan dengan memuji Engkau, ya Allah, aku memohon ampun. (Bisa juga membaca: Subḥāna rabbiyal-'aẓīmi wa biḥamdih 3x)."
+  },
+  {
+    title:"I'tidal (Bangun dari Ruku')",
+    arabic:"سَمِعَ اللهُ لِمَنْ حَمِدَهُ ۝ رَبَّنَا وَلَكَ الْحَمْدُ حَمْدًا كَثِيْرًا طَيِّبًا مُبَارَكًافِيْهِ",
+    latin:"Sami'allaahu liman hamidah. Rabbanaa wa lakal hamdu hamdan katsiran thayyiban mubaarokan fiih.",
+    arti:"Allah mendengar orang yang memuji-Nya. Ya Tuhanku, bagi-Mu segala puji, pujian yang banyak, baik, dan memberkati."
+  },
+  {
+    title:"Sujud Dua Kali",
+    arabic:"سُبْحَانَكَ اللهُمَّ رَبَّنَا وَبِحَمْدِكَ اللهُمَّ اغْفِرْلِيْ",
+    latin:"Subḥānaka Allāhumma rabbana wa biḥamdika, Allāhumma ighfir lī.",
+    arti:"Maha Suci Engkau, Ya Allah, dan dengan memuji kepada Engkau, Ya Allah, aku memohon ampun. (Bisa juga: Subḥāna rabbiyal-a'lā 3x)."
+  },
+  {
+    title:"Duduk Antara Dua Sujud",
+    arabic:"اَللّهُمَ اغْفِرْلِيْ وارْحَمنِيْ وَاجْبُرْنِيْ وَاهْدِنِيْ وَارْزُقْنِيْ",
+    latin:"Allāhumma ighfir lī warḥamnī wajburnī wahdinī warzuqnī.",
+    arti:"Ya Allah, ampunilah aku, kasihanilah aku, cukupkanlah aku, berilah petunjuk, dan berilah rezeki kepadaku."
+  },
+  {
+    title:"Tasyahud Awal & Akhir",
+    arabic:"اَلتَّحِيَّاتُ لِلّهِ وَالصَّلَوَاتُ وَالطَّيِّباَتُ. اَلسَّلاَمُ عَلَيْكَ أَيُّهاَ النَّبِيُّوَرَحْمَةُ اللهِ وَبَرَكاَتُهُ. اَلسَّلاَمُ عَلَيْناَ وَعَلَى عِباَدِاللهِ الصَّالِحِيْنَ أَشْهَدُ اَنْ لاَاِلَهَ اِلاَّ اللهِ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُوْلُهُ.",
+    latin:"Attahiyyaatu lillaahi washsholawaatu waththoyyibaat. Assalaamu 'alaika ayyuhannabiyyu warohmatullaahi wabarokaatuh. Assalaamu'alainaa wa'ala 'ibaadillaahi shshoolihiin. Asyhadu anlaa ilaaha illallaah waasyhadu annamuhammadan 'abduhu warosuuluh.",
+    arti:"Segala kehormatan, kebahagiaan, dan kebagusan adalah kepunyaan Allah. Semoga keselamatan bagi Engkau, ya Nabi Muhammad, beserta rahmat dan kebahagiaan Allah. Mudah-mudahan keselamatan juga bagi kita sekalian dan hamba-hamba Allah yang baik-baik. Aku bersaksi bahwa tiada Tuhan melainkan Allah dan aku bersaksi bahwa Muhammad itu hamba Allah dan utusan-Nya."
+  },
+  {
+    title:"Sholawat kepada Nabi (Tasyahud Akhir)",
+    arabic:"اَللّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى الِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيْمَ وَالِ إِبْرَاهِيْمَ وَبَارِكْ عَلَى مُحَمَّدٍ وَالِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيْمَ وَالِ إِبْرَاهِيْمَ. إِنَّكَ حَمِيْدٌ مَجِيْدٌ",
+    latin:"Allaahumma sholli 'alaa Muhammad wa'alaa aali Muhammad. Kamaa shollaita 'alaa ibroohiim wa aali ibroohiim. Wabaarik 'alaa Muhammad wa aali Muhammad. Kamaa baarokta 'alaa ibroohiim wa aali ibroohiim. Innaka hamiidummajiid.",
+    arti:"Ya Allah, limpahkanlah sholawat kepada Muhammad dan keluarga Muhammad, sebagaimana Engkau telah bersholawat kepada Ibrahim dan keluarga Ibrahim. Berkahilah Muhammad dan keluarga Muhammad, sebagaimana Engkau memberkahi Ibrahim dan keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Maha Mulia."
+  },
+  {
+    title:"Salam",
+    arabic:"السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ",
+    latin:"Assalaamu 'alaikum wa rahmatullaah",
+    arti:"Semoga keselamatan dan rahmat Allah tercurah kepadamu. (Menoleh ke kanan, lalu ke kiri)."
+  }
+];
+
+const container = document.getElementById('steps');
+data.forEach((item,i) => {
+  const div = document.createElement('div');
+  div.className = 'step';
+  div.innerHTML = `
+    <h2><span class="num">${i+1}</span>${item.title}</h2>
+    ${item.arabic ? `<div class="arabic">${item.arabic}</div>` : ''}
+    ${item.latin ? `<div class="latin">${item.latin}</div>` : ''}
+    <div class="arti">${item.arti}</div>
+  `;
+  div.addEventListener('click', () => div.classList.toggle('active'));
+  container.appendChild(div);
+});
+
+// Register Service Worker buat offline PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
